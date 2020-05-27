@@ -11,10 +11,13 @@ object Main {
 }
 
 object Main2 extends App {
-  Try {
-
+  val wordCount = new WordCount
+  val input = Try {
+    Source.fromURL(this.getClass.getClassLoader.getResource("news.txt")).getLines.toList.mkString
   }.toEither
-  println(
-    Source.fromURL(this.getClass.getClassLoader.getResource("ne.txt")).getLines.toList.mkString
+
+  input.map(wordCount.listWords).fold(
+    error => println(error),
+    _.reverse.take(10).foreach { case WordFrequency(word, counts) => println(s"$word $counts") }
   )
 }

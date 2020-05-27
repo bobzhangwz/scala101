@@ -3,8 +3,9 @@ package io.thoughtworks.wordcount
 case class WordFrequency(word: String, counts: Int)
 
 class WordCount {
+
   def listWords(text: String): List[WordFrequency] =
-    (extractWords _).andThen(countWords).apply(text).map {
+    (extractWords _).andThen(countWords)(text).map {
       case (word, count) => WordFrequency(word, count)
     }.toList.sortBy(_.counts)
 
