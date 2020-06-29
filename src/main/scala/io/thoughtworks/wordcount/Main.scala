@@ -21,3 +21,7 @@ object Main2 extends App {
     _.reverse.take(10).foreach { case WordFrequency(word, counts) => println(s"$word $counts") }
   )
 }
+
+object Main3 extends App {
+  sys.env.get("INPUT")
+}
