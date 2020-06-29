@@ -26,7 +26,7 @@ class EnvParserTest extends Specification with AllExpectations {
       EnvParser.getContentFromSource(InputSource("FILE", "/tmp/helloworld.txt")) should_== "hello world"
     }
     "from url source" >> {
-      val url =  "https://raw.githubusercontent.com/bobzhangwz/scala101/master/src/test/resources/helloworld.txt"
+      val url = "https://github.com/bobzhangwz/scala101/raw/workshop03/src/test/scala/resources/helloworld.txt"
       EnvParser.getContentFromSource(InputSource("URL", url)) should_== "hello world"
     }
   }
