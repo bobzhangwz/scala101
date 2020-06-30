@@ -10,13 +10,13 @@ class EnvParserTest extends Specification with AllExpectations {
 
   "should parse env input to input source" >> {
     "from normal String" >> {
-      EnvParser.parse("FILE:/work/round") should_== InputSource("FILE", "/work/round")
-      EnvParser.parse("URL:/work/round") should_== InputSource("URL", "/work/round")
+      EnvParser.parse("FILE@/work/round") should_== InputSource("FILE", "/work/round")
+      EnvParser.parse("URL@http://www.baidu.com") should_== InputSource("URL", "http://www.baidu.com")
     }
 
     "from bad String" >> {
-      EnvParser.parse(":URL:/work/round") must throwA[Error]
-      EnvParser.parse("URL:/work/round:/abcdef") must throwA[Error]
+      EnvParser.parse(":URL@/work/round") must throwA[Error]
+      EnvParser.parse("URL@/work/round@/abcdef") must throwA[Error]
     }
   }
 

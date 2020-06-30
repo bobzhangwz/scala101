@@ -23,5 +23,7 @@ object Main2 extends App {
 }
 
 object Main3 extends App {
-  sys.env.get("INPUT")
+  // INPUT=URL@https://github.com/bobzhangwz/scala101/raw/workshop03/src/test/scala/resources/helloworld.txt sbt run
+  val inputSource = EnvParser.parse(sys.env.get("INPUT").get)
+  println(EnvParser.getContentFromSource(inputSource))
 }

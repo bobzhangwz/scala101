@@ -8,7 +8,7 @@ case class InputSource(source: String, path: String)
 
 object EnvParser {
   def parse(input: String): InputSource = {
-    val inputList: List[String] = input.split(":").toList.map(_.trim)
+    val inputList: List[String] = input.split("@").toList.map(_.trim)
 
     inputList match {
       case source :: path :: Nil => InputSource(source, path)
