@@ -7,20 +7,20 @@ import java.io.File
 case class InputSource(source: String, path: String)
 
 object EnvParser {
-  def parse(input: String): InputSource = {
+  def parse(input: String): Either[Throwable, InputSource] = {
     val inputList: List[String] = input.split("@").toList.map(_.trim)
 
     inputList match {
-      case source :: path :: Nil => InputSource(source, path)
-      case _ => throw new Error(s"Invalid source: ${input}")
+      case source :: path :: Nil => Right(InputSource(source, path))
+      case _ => Left(new Error(s"Invalid source: ${input}"))
     }
   }
 
-  def getContentFromSource(source: InputSource): String = {
+  def getContentFromSource(source: InputSource): Either[Throwable, String] = {
     source match {
-      case InputSource("URL", link) => Source.fromURL(new URL(link)).getLines().mkString("\n")
-      case InputSource("FILE", path) => Source.fromFile(new File(path)).getLines().mkString("\n")
-      case InputSource(unknown, path) => throw new Error(s"Unsupported source ${unknown}: ${path}")
+      case InputSource("URL", link) => Right(Source.fromURL(new URL(link)).getLines().mkString("\n"))
+      case InputSource("FILE", path) => Right(Source.fromFile(new File(path)).getLines().mkString("\n"))
+      case InputSource(unknown, path) => Left(new Error(s"Unsupported source ${unknown}: ${path}"))
     }
   }
 
