@@ -1,5 +1,7 @@
 package io.thoughtworks.calculator
 
+import scala.util.Try
+
 object Calculator extends App {
   val envMap = sys.env
 
@@ -96,7 +98,14 @@ class Calculator4 {
 }
 
 class Calculator5 {
-  def calculate(envMap: Map[String, String]): Either[Throwable, Int] = ???
+  def calculate(envMap: Map[String, String]): Either[Throwable, Int] = for {
+    var1 <- envMap.get("VAR1").toRight(new Error("VAR1 not exist"))
+    var2 <- envMap.get("VAR2").toRight(new Error("VAR2 not exist"))
+
+    v1 <- var1.toIntOption.toRight(new Error("can not parse value"))
+    v2 <- Try { var2.toInt }.toEither
+    ops <- operation(envMap)
+  } yield ops(v1)(v2)
 
   def operation(envMap: Map[String, String]): Either[Throwable, Int => Int => Int] = {
     envMap.get("OPS").toRight(new Error("OPS not exists")).flatMap {
