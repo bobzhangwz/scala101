@@ -12,7 +12,7 @@ lazy val coverageExcludedClasses = List(
 
 lazy val root = (project in file("."))
   .settings(
-    name := "scala-word-counts",
+    name := "calculator",
     coverageEnabled in Test := true,
     coverageMinimum := 90,
     coverageFailOnMinimum := true,
