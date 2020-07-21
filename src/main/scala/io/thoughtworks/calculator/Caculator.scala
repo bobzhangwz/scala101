@@ -33,6 +33,16 @@ class Calculator {
   }
 }
 
+/**
+  * 知识点：
+  * 1. sealed trait
+  * 2. parameter type
+  * 3. case class
+  * 4. case object
+  * 5. Variant/Convariant
+  * 6. for is map and flatMap
+  * 7. previous Homeworks
+  */
 object Calculator2 extends App {
 
   sealed trait Maybe[A] {
