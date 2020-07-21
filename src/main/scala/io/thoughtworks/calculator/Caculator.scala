@@ -1,7 +1,5 @@
 package io.thoughtworks.calculator
 
-import scala.util.Try
-
 object Calculator extends App {
   val envMap = sys.env
 
@@ -9,8 +7,6 @@ object Calculator extends App {
   println("calculator 1:")
   println((new Calculator).calculate(envMap))
 
-  println("calculator 2:")
-  println((new Calculator2).calculate(envMap))
 }
 
 class Calculator {
@@ -37,83 +33,76 @@ class Calculator {
   }
 }
 
-class Calculator2 {
-  def calculate(envMap: Map[String, String]): Int = {
-    val var1 = envMap("VAR1").toInt
-    val var2 = envMap("VAR2").toInt
-    operation(envMap)(var1, var2)
-  }
+object Calculator2 extends App {
 
-  def operation(envMap: Map[String, String]): (Int, Int) => Int = ??? 
-}
-
-class Calculator3 {
-  def calculate(envMap: Map[String, String]): Option[Int] = {
-    val var1: Option[Int] = envMap.get("VAR1").map(_.toInt)
-    val var2: Option[Int] = envMap.get("VAR2").map(_.toInt)
-    var1.flatMap(v1 =>
-      var2.flatMap(v2 =>
-        operation(envMap).map(
-          ops => ops(v1)(v2)
-        )
-      )
-    )
-  }
-
-  def operation(envMap: Map[String, String]): Option[Int => Int => Int] =
-    envMap.get("OPS").map { _ match {
-      case "-" =>
-        v1 => v2 => v1 - v2
-      case "+" =>
-        v1 => v2 => v1 + v2
-      case "*" =>
-        v1 => v2 => v1 * v2
-      case "/" => v1 => v2 => v1 / v2
-      case _ => throw new Error("Unsupport operation")
-    }}
-}
-
-class Calculator4 {
-  def calculate(envMap: Map[String, String]): Option[Int] = {
-    val var1: Option[Int] = envMap.get("VAR1").map(_.toInt)
-    val var2: Option[Int] = envMap.get("VAR2").map(_.toInt)
-    for {
-      v1 <- var1
-      v2 <- var2
-      ops <- operation(envMap)
-    } yield ops(v1)(v2)
-  }
-
-  def operation(envMap: Map[String, String]): Option[Int => Int => Int] = envMap.get("OPS").map {
-    case "-" =>
-      v1 => v2 => v1 - v2
-    case "+" =>
-      v1 => v2 => v1 + v2
-    case "*" =>
-      v1 => v2 => v1 * v2
-    case "/" =>
-      v1 => v2 => v1 / v2
-    case _ => throw new Error("Unsupport operation")
-  }
-}
-
-class Calculator5 {
-  def calculate(envMap: Map[String, String]): Either[Throwable, Int] = for {
-    var1 <- envMap.get("VAR1").toRight(new Error("VAR1 not exist"))
-    var2 <- envMap.get("VAR2").toRight(new Error("VAR2 not exist"))
-
-    v1 <- var1.toIntOption.toRight(new Error("can not parse value"))
-    v2 <- Try { var2.toInt }.toEither
-    ops <- operation(envMap)
-  } yield ops(v1)(v2)
-
-  def operation(envMap: Map[String, String]): Either[Throwable, Int => Int => Int] = {
-    envMap.get("OPS").toRight(new Error("OPS not exists")).flatMap {
-      case "-" => Right(v1 => v2 => v1 - v2)
-      case "+" => Right(v1 => v2 => v1 + v2)
-      case "*" => Right(v1 => v2 => v1 * v2)
-      case "/" => Right(v1 => v2 => v1 / v2)
-      case ops => Left(new Error(s"Unsupported operator $ops"))
+  sealed trait Maybe[A] {
+    def map[B](f: A => B): Maybe[B] = this match {
+      case Has(a) => Has(f(a))
+      case NotHas() => NotHas()
+    }
+    def flatMap[B](f: A => Maybe[B]): Maybe[B] = this match {
+      case Has(a) => f(a)
+      case NotHas() => NotHas()
     }
   }
+  case class Has[A](value: A) extends Maybe[A]
+  case class NotHas[A]() extends Maybe[A]
+
+  val hasA = Has(1)
+  val hasB = Has(2)
+
+  val c = for {
+    a <- hasA
+    b <- hasB
+  } yield a + b
+
+  println(c)
+}
+
+object Calculator3 extends App {
+  // https://wiki.jikexueyuan.com/project/scala-development-guide/scala-class-hierarchy.html
+  sealed trait Maybe[+A] {
+    def map[B](f: A => B): Maybe[B] = this match {
+      case Has(a) => Has(f(a))
+      case NotHas => NotHas
+    }
+    def flatMap[B](f: A => Maybe[B]): Maybe[B] = this match {
+      case Has(a) => f(a)
+      case NotHas => NotHas
+    }
+  }
+  case class Has[A](value: A) extends Maybe[A]
+  case object NotHas extends Maybe[Nothing]
+
+  val hasA: Maybe[AnyVal] = Has(2)
+  val hasB: Maybe[AnyVal] = NotHas
+  val hasC: Maybe[AnyVal] = Has(3)
+//  for {
+//    a <- hasA
+//    b <- hasC
+//  } yield a + b
+}
+
+object Variant extends App {
+  sealed trait Human {
+    def name: String
+    def gendor: String
+  }
+  case class Man(override val name: String) extends Human {
+    val gendor: String = "male"
+  }
+  case class Woman(override val name: String) extends Human {
+    val gendor: String = "female"
+  }
+
+  val man1 = Man("1")
+  val woman1 = Woman("2")
+
+  val men1: List[Man] = List(man1)
+  val men2: List[Human] = men1
+
+  val menName: Function[Human, String] = _.name
+
+  val menName2: Function[Man, String] = menName
+
 }
