@@ -13,7 +13,7 @@ object HelloOption extends App {
 }
 
 object HelloOption2 extends App {
-  val aOption: Option[Int] = Some(1)
+  val aOption: Option[Int] = Option(1)
   val bOption: Option[Int] = Some(2)
   val cOption: Option[Int] = None
   val c =

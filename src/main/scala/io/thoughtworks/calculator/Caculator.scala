@@ -18,7 +18,7 @@ class Calculator {
 
   def operation(envMap: Map[String, String]): Int => Int => Int = {
     def multiple(a: Int, b: Int): Int = a * b
-    val divide: Int => Int => Int = a => b => a/b 
+    val divide: Int => Int => Int = a => b => a/b
 
     envMap("OPS") match {
       case "-" =>
@@ -45,21 +45,26 @@ class Calculator {
   */
 object Calculator2 extends App {
 
+  object Maybe {
+    def apply[A](a: A): Maybe[A] = if(a == null) No() else Yes(a)
+  }
+
   sealed trait Maybe[A] {
+
     def map[B](f: A => B): Maybe[B] = this match {
-      case Has(a) => Has(f(a))
-      case NotHas() => NotHas()
+      case Yes(a) => Yes(f(a))
+      case No() => No()
     }
     def flatMap[B](f: A => Maybe[B]): Maybe[B] = this match {
-      case Has(a) => f(a)
-      case NotHas() => NotHas()
+      case Yes(a) => f(a)
+      case No() => No()
     }
   }
-  case class Has[A](value: A) extends Maybe[A]
-  case class NotHas[A]() extends Maybe[A]
+  case class Yes[A](value: A) extends Maybe[A]
+  case class No[A]() extends Maybe[A]
 
-  val hasA = Has(1)
-  val hasB = Has(2)
+  val hasA = Maybe(1)
+  val hasB = Yes(2)
 
   val c = for {
     a <- hasA
@@ -73,20 +78,20 @@ object Calculator3 extends App {
   // https://wiki.jikexueyuan.com/project/scala-development-guide/scala-class-hierarchy.html
   sealed trait Maybe[+A] {
     def map[B](f: A => B): Maybe[B] = this match {
-      case Has(a) => Has(f(a))
-      case NotHas => NotHas
+      case Yes(a) => Yes(f(a))
+      case No => No
     }
     def flatMap[B](f: A => Maybe[B]): Maybe[B] = this match {
-      case Has(a) => f(a)
-      case NotHas => NotHas
+      case Yes(a) => f(a)
+      case No => No
     }
   }
-  case class Has[A](value: A) extends Maybe[A]
-  case object NotHas extends Maybe[Nothing]
+  case class Yes[A](value: A) extends Maybe[A]
+  case object No extends Maybe[Nothing]
 
-  val hasA: Maybe[AnyVal] = Has(2)
-  val hasB: Maybe[AnyVal] = NotHas
-  val hasC: Maybe[AnyVal] = Has(3)
+  val hasA: Maybe[AnyVal] = Yes(2)
+  val hasB: Maybe[AnyVal] = No
+  val hasC: Maybe[AnyVal] = Yes(3)
 //  for {
 //    a <- hasA
 //    b <- hasC
