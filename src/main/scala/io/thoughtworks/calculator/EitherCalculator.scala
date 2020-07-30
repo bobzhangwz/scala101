@@ -17,7 +17,17 @@ object EitherCalculator extends App {
   // } yield (a + b)
 }
 
-sealed trait Alternate[+E, +F]
+sealed trait Alternate[+E, +F] {
+  def map[G](f: F => G): Alternate[E, G] = this match {
+    case BeRight(r) => BeRight(f(r))
+    case BeWrong(w) => BeWrong(w)
+  }
+
+  def flatMap[E1 >: E, G](f: F => Alternate[E1, G]) = this match {
+    case BeRight(r) => f(r)
+    case BeWrong(w) => BeWrong(w)
+  }
+}
 
 case class BeRight[E, F](r: F) extends Alternate[E, F]
 case class BeWrong[E, F](r: E) extends Alternate[E, F]
