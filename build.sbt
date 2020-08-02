@@ -1,4 +1,3 @@
-
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 ThisBuild / scalaVersion     := "2.13.1"
@@ -21,19 +20,20 @@ lazy val root = (project in file("."))
 
 libraryDependencies ++= Seq(
   "org.specs2" %% "specs2-core" % "4.8.3" % Test,
-  "ch.qos.logback" % "logback-classic" % "1.2.+"
+  "ch.qos.logback" % "logback-classic" % "1.2.+",
+  "org.typelevel" %% "cats-core" % "2.0.0",
+  "org.typelevel" %% "cats-free" % "2.0.0"
 )
 
 scalacOptions in Test ++= Seq("-Yrangepos")
-
 scalacOptions ++= Seq(
   "-encoding",
   "utf-8", // Specify character encoding used by source files.
   "-Ybackend-parallelism", //
   "8",
   "-explaintypes", // Explain type errors in more detail.
-  "-feature", // Emit warning and location for usages of features that should be imported explicitly.
-  "-unchecked", // Enable additional warnings where generated code depends on assumptions.
+  "-feature",    // Emit warning and location for usages of features that should be imported explicitly.
+  "-unchecked",  // Enable additional warnings where generated code depends on assumptions.
   "-Xcheckinit", // Wrap field accessors to throw an exception on uninitialized access.
   // "-Ymacro-annotations", // Enable support for macro annotations, formerly in macro paradise.
 
