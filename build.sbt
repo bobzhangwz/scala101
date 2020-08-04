@@ -18,11 +18,16 @@ lazy val root = (project in file("."))
     coverageExcludedPackages := coverageExcludedClasses.mkString(";")
   )
 
+val http4sVersion = "0.21.6"
+
 libraryDependencies ++= Seq(
   "org.specs2" %% "specs2-core" % "4.8.3" % Test,
   "ch.qos.logback" % "logback-classic" % "1.2.+",
   "org.typelevel" %% "cats-core" % "2.0.0",
-  "org.typelevel" %% "cats-free" % "2.0.0"
+  "org.typelevel" %% "cats-free" % "2.0.0",
+  "org.http4s" %% "http4s-dsl" % http4sVersion,
+  "org.http4s" %% "http4s-blaze-server" % http4sVersion,
+  "org.http4s" %% "http4s-blaze-client" % http4sVersion
 )
 
 scalacOptions in Test ++= Seq("-Yrangepos")
